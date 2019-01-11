@@ -1,0 +1,50 @@
+﻿// this code creates the Dial method that will be used on the Android Platform to dial a translated phone #
+
+using Android.Content;
+using Android.Telephony;
+using PhoneWord.Droid;
+using System.Linq;
+using Xamarin.Forms;
+using Uri = Android.Net.Uri;
+
+[assembly: Dependency(typeof(PhoneDialer))]
+namespace PhoneWord.Droid
+{
+    public class PhoneDialer : IDialer
+    {
+        public bool Dial(string number)
+        {
+            var context = MainActivity.Instance;
+            if (context == null)
+            {
+                return false;
+            }
+
+            var intent = new Intent(Intent.ActionDial);
+            intent.SetData(Uri.Parse("tel:" + number));
+
+            if (IsIntentAvailable (context, intent))
+            {
+                context.StartActivity(intent);
+                return true;
+            }
+
+            return false;
+        }
+
+        public static bool IsIntentAvailable(Context context, Intent intent)
+        {
+            var packageManager = context.PackageManager;
+
+            var list = packageManager.QueryIntentServices(intent, 0).Union(packageManager.QueryIntentActivities(intent, 0));
+
+            if (list.Any())
+                return true;
+
+            var manager = TelephonyManager.FromContext(context);
+            return manager.PhoneType != PhoneType.None;
+        }
+
+
+    }
+}
