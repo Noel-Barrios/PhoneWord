@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
 
@@ -7,11 +7,15 @@ namespace PhoneWord
 {
     public partial class App : Application
     {
+
+        public static IList<string> PhoneNumbers { get; set; }
+
         public App()
         {
             InitializeComponent();
-
-            MainPage = new MainPage();
+            // the PhoneNumbers collection will be used to store a list of each translated phone number called by the app
+            PhoneNumbers = new List<string>();
+            MainPage = new NavigationPage(new MainPage());
         }
 
         protected override void OnStart()
